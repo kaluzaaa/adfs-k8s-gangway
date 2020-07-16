@@ -1,0 +1,27 @@
+﻿@page
+@model KConfigModel
+@{
+    ViewData["Title"] = "KConfig";
+}
+<h1>@ViewData["Title"]</h1>
+
+<pre>
+kubectl config set-cluster "@ViewData["cluster_name"]" --server=@ViewData["apiserver_url"] --insecure-skip-tls-verify
+kubectl config set-credentials "@ViewData["user"]"  \
+    --auth-provider=oidc  \
+    --auth-provider-arg='idp-issuer-url=@ViewData["issuer_url"]'  \
+    --auth-provider-arg='client-id=@ViewData["client_id"]'  \
+    --auth-provider-arg='client-secret=@ViewData["client_secret"]' \
+    --auth-provider-arg='refresh-token=@ViewData["refresh_token"]' \
+    --auth-provider-arg='id-token=@ViewData["id_token"]'
+kubectl config set-context "@ViewData["cluster_name"]" --cluster="@ViewData["cluster_name"]" --user="@ViewData["user"]"
+kubectl config use-context "@ViewData["cluster_name"]"
+</pre>
+
+<dl>
+    @foreach (var claim in User.Claims)
+    {
+        <dt>@claim.Type</dt>
+        <dd>@claim.Value</dd>
+    }
+</dl>
